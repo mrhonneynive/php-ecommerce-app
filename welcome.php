@@ -86,7 +86,7 @@ if (!isset($_SESSION["user_id"]) || !isset($_SESSION["role"])) {
 </head>
 <body>
     <div class="main">
-        <h1>Welcome™</h1>
+        <h1>Welcome</h1>
 
         <div class="button">
             <a href="register.php">Register</a>
