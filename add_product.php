@@ -1,9 +1,13 @@
 <?php
 session_start();
+// always have a crsf token before the form
+if (!isset($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+}
 require "./db.php";
 
 // only market users
-if (!isset($_SESSION["id"]) || $_SESSION["role"] != "market") {
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] != "market") {
     header("Location: login.php");
     exit;
 }
@@ -51,26 +55,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // handle image upload
     $image_path = null;
-    if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
+    $image_dir = "uploads/";
+
+    if (!is_dir($image_dir)) {
+        mkdir($image_dir, 0777, true); // create it if it doesn't exist
+    }
+
+    if (isset($_FILES["image"]) && $_FILES["image"]["error"] === 0) {
         $file_type = mime_content_type($_FILES["image"]["tmp_name"]);
         $file_size = $_FILES["image"]["size"];
-        if ($file_type != "image/jpeg" && $file_type != "image/png") {
-            $errors[] = "Only JPEG or PNG allowed.";
+
+        if (!in_array($file_type, ["image/jpeg", "image/png"])) {
+            $errors[] = "Only JPEG or PNG images are allowed.";
         }
+
         if ($file_size > 2 * 1024 * 1024) {
-            $errors[] = "Image too big (max 2MB).";
+            $errors[] = "Image must be smaller than 2MB.";
         }
+
         if (empty($errors)) {
             $ext = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
-            $image_path = "uploads/" . uniqid() . "." . $ext;
-            move_uploaded_file($_FILES["image"]["tmp_name"], $image_path);
+            $filename = uniqid("img_", true) . "." . $ext;
+            $image_path = $image_dir . $filename;
+
+            if (!move_uploaded_file($_FILES["image"]["tmp_name"], $image_path)) {
+                $errors[] = "Image upload failed. Check folder permissions for /uploads.";
+            }
         }
+    } else if ($_FILES["image"]["error"] !== 4) {
+        $errors[] = "Image upload error code: " . $_FILES["image"]["error"];
     }
+
 
     // if no errors, save to db
     if (empty($errors)) {
         $stmt = $db->prepare("INSERT INTO products (market_id, title, stock, normal_price, discounted_price, expiration_date, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$_SESSION["id"], $title, $stock, $normal_price, $discounted_price, $expiration_date, $image_path]);
+        $stmt->execute([$_SESSION["user_id"], $title, $stock, $normal_price, $discounted_price, $expiration_date, $image_path]);
 
         // new csrf token
         $_SESSION["csrf_token"] = bin2hex(random_bytes(32));

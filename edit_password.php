@@ -1,9 +1,8 @@
 <?php
-session_start();
 require "./db.php";
+require "./protect.php";
 
 if (isset($_SESSION["user_id"])) {
-    require "./protect.php";
     $user = [
         "type" => "id",
         "value" => $_SESSION["user_id"]

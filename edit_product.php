@@ -3,7 +3,7 @@ session_start();
 require "./db.php";
 
 // only market users
-if (!isset($_SESSION["id"]) || $_SESSION["role"] != "market") {
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] != "market") {
     header("Location: login.php");
     exit;
 }
@@ -16,7 +16,7 @@ if (!isset($_GET["id"])) {
 
 $product_id = $_GET["id"];
 $stmt = $db->prepare("SELECT * FROM products WHERE id = ? AND market_id = ?");
-$stmt->execute([$product_id, $_SESSION["id"]]);
+$stmt->execute([$product_id, $_SESSION["user_id"]]);
 $product = $stmt->fetch();
 
 if (!$product) {
@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // save to db
     if (empty($errors)) {
         $stmt = $db->prepare("UPDATE products SET title = ?, stock = ?, normal_price = ?, discounted_price = ?, expiration_date = ?, image_path = ? WHERE id = ? AND market_id = ?");
-        $stmt->execute([$title, $stock, $normal_price, $discounted_price, $expiration_date, $image_path, $product_id, $_SESSION["id"]]);
+        $stmt->execute([$title, $stock, $normal_price, $discounted_price, $expiration_date, $image_path, $product_id, $_SESSION["user_id"]]);
 
         // new csrf token
         $_SESSION["csrf_token"] = bin2hex(random_bytes(32));

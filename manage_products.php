@@ -3,7 +3,7 @@ session_start();
 require "./db.php";
 
 // only market users can access
-if (!isset($_SESSION["id"]) || $_SESSION["role"] != "market") {
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] != "market") {
     header("Location: login.php");
     exit;
 }
@@ -15,7 +15,7 @@ if (!isset($_SESSION["csrf_token"])) {
 
 // get all products for this market
 $stmt = $db->prepare("SELECT * FROM products WHERE market_id = ?");
-$stmt->execute([$_SESSION["id"]]);
+$stmt->execute([$_SESSION["user_id"]]);
 $products = $stmt->fetchAll();
 ?>
 
@@ -52,26 +52,35 @@ $products = $stmt->fetchAll();
                     <th>Image</th>
                     <th>Actions</th>
                 </tr>
-                <?php foreach ($products as $p) { ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($p["title"]); ?></td>
-                        <td><?php echo htmlspecialchars($p["stock"]); ?></td>
-                        <td><?php echo htmlspecialchars($p["normal_price"]); ?> TL</td>
-                        <td><?php echo htmlspecialchars($p["discounted_price"]); ?> TL</td>
-                        <td><?php echo htmlspecialchars($p["expiration_date"]); ?></td>
-                        <td>
-                            <?php if ($p["image_path"]) { ?>
-                                <img src="<?php echo htmlspecialchars($p["image_path"]); ?>" width="50">
-                            <?php } else { ?>
-                                No Image
-                            <?php } ?>
-                        </td>
-                        <td>
-                            <a href="edit_product.php?id=<?php echo $p["id"]; ?>">Edit</a>
-                            <a href="delete_product.php?id=<?php echo $p["id"]; ?>&csrf_token=<?php echo $_SESSION["csrf_token"]; ?>" 
-                               onclick="return confirm('Sure you want to delete?')">Delete</a>
-                        </td>
-                    </tr>
+                <?php
+                $today = date("Y-m-d");
+                foreach ($products as $p) {
+                    $isExpired = $p["expiration_date"] < $today;
+                ?>
+                <tr style="<?= $isExpired ? 'background-color:#ffe6e6;' : '' ?>">
+                    <td>
+                        <?= htmlspecialchars($p["title"]); ?>
+                        <?php if ($isExpired): ?>
+                            <span style="color:red;">(Expired)</span>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= htmlspecialchars($p["stock"]); ?></td>
+                    <td><?= htmlspecialchars($p["normal_price"]); ?> TL</td>
+                    <td><?= htmlspecialchars($p["discounted_price"]); ?> TL</td>
+                    <td><?= htmlspecialchars($p["expiration_date"]); ?></td>
+                    <td>
+                        <?php if ($p["image_path"]) { ?>
+                            <img src="<?= htmlspecialchars($p["image_path"]); ?>" width="50">
+                        <?php } else { ?>
+                            No Image
+                        <?php } ?>
+                    </td>
+                    <td>
+                        <a href="edit_product.php?id=<?= $p["id"]; ?>">Edit</a>
+                        <a href="delete_product.php?id=<?= $p["id"]; ?>&csrf_token=<?= $_SESSION["csrf_token"]; ?>"
+                        onclick="return confirm('Sure you want to delete?')">Delete</a>
+                    </td>
+                </tr>
                 <?php } ?>
             </table>
         <?php } ?>

@@ -2,12 +2,12 @@
 session_start();
 require "./db.php";
 
-if (!isset($_SESSION["id"]) || $_SESSION["role"] != "consumer") {
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] != "consumer") {
     header("Location: login.php");
     exit;
 }
 
-$user_id = $_SESSION["id"];
+$user_id = $_SESSION["user_id"];
 
 // Get the cart ID
 $stmt = $db->prepare("SELECT id FROM carts WHERE user_id = ?");

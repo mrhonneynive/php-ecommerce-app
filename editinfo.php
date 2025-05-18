@@ -1,139 +1,121 @@
 <?php
-    require "./protect.php";
+require "./protect.php";
+require "./db.php";
+
+$user_id = $_SESSION["user_id"];
+$stmt = $db->prepare("
+    SELECT u.name, u.email, u.role, c.name AS city_name, d.name AS district_name
+    FROM users u
+    JOIN cities c ON u.city_id = c.id
+    JOIN districts d ON u.district_id = d.district_id
+    WHERE u.id = ?
+");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update User Info</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f9f9f9;
-        margin: 0;
-        padding: 40px 20px;
-        display: flex;
-        justify-content: center;
-        min-height: 100vh;
-        color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
     }
 
     .main {
-        background: #fff;
-        padding: 30px 40px;
-        border-radius: 10px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-        max-width: 700px;
-        width: 100%;
-        text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
     }
 
-    h3 {
-        color: #555;
-        margin-bottom: 30px;
-        font-weight: 600;
-        font-size: 1.5rem;
+    .avatar {
+      font-size: 60px;
+      color: #4caf50;
+      margin-bottom: 10px;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    h2 {
+      margin: 10px 0 5px;
+      color: #2c3e50;
     }
 
-    tr {
-        display: flex;
-        justify-content: center;
-        gap: 25px;
-        flex-wrap: wrap;
+    .sub-info {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 30px;
     }
 
-    td {
-        flex: 1 1 150px;
-        max-width: 150px;
-        text-align: center;
+    .button-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
     }
 
-    .button {
-        background-color: #4caf50;
-        border-radius: 6px;
-        padding: 12px 0;
-        box-shadow: 0 3px 8px rgba(76,175,80,0.4);
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    .card-button {
+      background-color: #4caf50;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      min-width: 120px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    .button a {
-        text-decoration: none;
-        color: white;
-        font-weight: 600;
-        font-size: 1.1rem;
-        display: block;
+    .card-button:hover {
+      background-color: #43a047;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.1);
     }
 
-    .button:hover {
-        background-color: #43a047;
-        box-shadow: 0 5px 12px rgba(67,160,71,0.6);
+    .back-link {
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      text-decoration: none;
+      color: #4caf50;
+      font-weight: bold;
     }
 
-    .link {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        font-size: 16px;
-        text-decoration: none;
-        color: #4caf50;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: color 0.3s ease;
-        z-index: 10;
+    .back-link:hover {
+      color: #388e3c;
     }
-
-    .link:hover {
-        color: #388e3c;
-    }
-</style>
+  </style>
 </head>
 <body>
-    <!-- Back -->
-    <a href="main.php" class="link">
-         Back
-    </a>
+<a href="main.php" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
 
+<div class="main">
+  <div class="avatar"><i class="fas fa-user-circle"></i></div>
+  <h2><?= htmlspecialchars($user["name"]) ?></h2>
+  <div class="sub-info"><?= htmlspecialchars($user["email"]) ?> — <?= ucfirst($user["role"]) ?></div>
+  <div class="sub-info"><?= htmlspecialchars($user["city_name"]) ?> / <?= htmlspecialchars($user["district_name"]) ?></div>
 
+  <div class="button-grid">
+    <a class="card-button" href="edit_name.php">Edit Name</a>
+    <a class="card-button" href="edit_email.php">Edit Email</a>
+    <a class="card-button" href="edit_password.php">Edit Password</a>
+    <a class="card-button" href="edit_location.php">Edit Location</a>
+  </div>
+</div>
 
-    <div class="main">
-        <h3>Choose Edit Profile</h3>
-        <form action="" method="post">
-            <table>
-                <tr>
-                    <td>
-                        <div class="button">
-                            <a href="edit_name.php">Name</a>
-                        </div>    
-                    </td>
-                    <td>
-                        <div class="button">
-                            <a href="edit_email.php">Email</a>
-                        </div>    
-                    </td>
-                    <td>
-                        <div class="button">
-                            <a href="edit_password.php">Password</a>
-                        </div>    
-                    </td>
-                    <td>
-                        <div class="button">
-                            <a href="edit_location.php">Location</a>
-                        </div>    
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
 </body>
 </html>

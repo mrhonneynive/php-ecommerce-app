@@ -110,16 +110,15 @@ input[type="text"]:focus {
     </style>
 </head>
 <body>
-     <a href="editinfo.php" class="link">
-         Back
-    </a>
+    <a href="editinfo.php" class="link">← Back</a>
     <div class="main">
         <h1>This Page For Updating Your Name</h1>
+
         <form action="" method="post">
             <table>
                 <tr>
                     <td>Enter your new name:</td>
-                    <td><input type="text" name="newname"></td>
+                    <td><input type="text" name="newname" required></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -128,6 +127,14 @@ input[type="text"]:focus {
                 </tr>
             </table>
         </form>
+
+        <?php if (isset($success)) : ?>
+            <p style="color: green; font-weight: bold; margin-top: 20px;">
+                <?= htmlspecialchars($success) ?>
+            </p>
+            <a href="editinfo.php" class="button" style="margin-top: 10px; display:inline-block; text-decoration: none;">← Back to Edit Info</a>
+        <?php endif; ?>
     </div>
 </body>
+
 </html>

@@ -139,6 +139,14 @@ CREATE TABLE IF NOT EXISTS `products` (
   KEY `market_id` (`market_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci;
 
+-- mock data for DB demo for products
+INSERT INTO products (market_id, title, stock, normal_price, discounted_price, expiration_date, image_path)
+VALUES
+(8, 'Toblerone 100gr', 25, 20.00, 12.00, '2025-05-19', 'uploads/toblerone.jpg'),
+(8, 'Magnolia Cake', 12, 35.00, 22.00, '2025-05-20', 'uploads/magnolia.jpg'),
+(8, 'Milk 1L', 30, 10.00, 6.00, '2025-05-21', 'uploads/milk.jpg');
+--
+
 -- --------------------------------------------------------
 
 --
@@ -194,6 +202,8 @@ INSERT INTO `users` (`id`, `email`, `password`, `name`, `city_id`, `district_id`
 (2, 'ahmetcanpolat0000@gmail.com', '$2y$10$A5nabnk87ZlqZivSxQ3CgewTc.1w3IquBNrPsJTs/qFrFOADogjNq', 'Amir', 34, 15, 'market', '2025-05-15 16:41:19'),
 (3, 'acikstories@gmail.com', '$2y$10$l.gIigOKLv1oYwEEgR1z4.La1zIv9lod/1NGRkHfNz0H90wrivIXu', 'Yusuf Ethem', 38, 21, 'market', '2025-05-15 16:58:17'),
 (4, 'storiesacik@gmail.com', '$2y$10$kVUNFmY/ey8UcPFc5oWlA.K.PviW0vbtZvRIYufsoOjjNq0tw2Lce', 'Murat', 61, 24, 'consumer', '2025-05-15 17:34:30');
+(7, 'hasanhuseyinbalbicak@gmail.com', '$2y$10$TG6yE4R3nuFMHfGjYK6nr.JkCXSDGGJp3Ab3SV4xaDbiIcc4v2zLu', 'hasan', 6, 11, 'consumer', '2025-05-17 10:34:04'),
+(8, 'mr.honneynive@gmail.com', '$2y$10$/IlaUgCUbhvNUyTlkJqmsOo/BFyq7vWr2u5x3vVXFyYFk.AVqheo6', 'MarketHasan', 6, 11, 'market', '2025-05-17 10:47:25');
 
 --
 -- Dökümü yapılmış tablolar için kısıtlamalar

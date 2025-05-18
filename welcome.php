@@ -33,7 +33,7 @@ if (!isset($_SESSION["user_id"]) || !isset($_SESSION["role"])) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Welcome™</title>
+    <title>Welcome</title>
     <style>
         body {
             font-family: Arial, sans-serif;
