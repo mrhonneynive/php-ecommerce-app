@@ -100,6 +100,7 @@ $(function() {
                 <th>Market</th>
                 <th>District</th>
                 <th>Product</th>
+                <th>Image</th>
                 <th>Price (TL)</th>
                 <th>Quantity</th>
                 <th>Add</th>
@@ -111,6 +112,13 @@ $(function() {
                 <td><?= htmlspecialchars($product["market_name"]) ?></td>
                 <td><?= htmlspecialchars($product["district_name"]) ?></td>
                 <td><?= htmlspecialchars($product["title"]) ?></td>
+                <td>
+                    <?php if (!empty($product["image_path"])): ?>
+                        <img src="<?= htmlspecialchars($product["image_path"]) ?>" width="60">
+                    <?php else: ?>
+                        <em>No Image</em>
+                    <?php endif; ?>
+                </td>
                 <td class="price"><?= number_format($product["discounted_price"], 2) ?></td>
                 <td><input type="number" class="qty" value="1" min="1"></td>
                 <td>
